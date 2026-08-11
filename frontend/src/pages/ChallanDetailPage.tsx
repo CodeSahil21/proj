@@ -50,7 +50,7 @@ export function ChallanDetailPage() {
 
   const cancelMutation = useMutation({
     mutationFn: () => challansApi.cancel(id!),
-    onSuccess: (res) => {
+    onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['challan', id] });
       qc.invalidateQueries({ queryKey: ['challans'] });
       qc.invalidateQueries({ queryKey: ['products'] });

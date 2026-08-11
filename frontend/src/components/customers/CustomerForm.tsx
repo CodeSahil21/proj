@@ -54,6 +54,8 @@ export function CustomerForm({ open, onClose, customer }: CustomerFormProps) {
     mutationFn: (data: typeof form) => {
       const payload = {
         ...data,
+        customerType: data.customerType as import('@/types').CustomerType | undefined,
+        status: data.status as import('@/types').CustomerStatus | undefined,
         email: data.email || undefined,
         followUpDate: data.followUpDate ? new Date(data.followUpDate).toISOString() : undefined,
       };

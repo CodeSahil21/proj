@@ -1,11 +1,18 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ToastProvider } from '@/components/ui/toast';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+
+// Pages
 import { LoginPage } from '@/pages/LoginPage';
 import { DashboardPage } from '@/pages/DashboardPage';
 import { CustomersPage } from '@/pages/CustomersPage';
+import { CustomerDetailPage } from '@/pages/CustomerDetailPage';
 import { ProductsPage } from '@/pages/ProductsPage';
+import { ProductDetailPage } from '@/pages/ProductDetailPage';
 import { ChallansPage } from '@/pages/ChallansPage';
+import { CreateChallanPage } from '@/pages/CreateChallanPage';
+import { ChallanDetailPage } from '@/pages/ChallanDetailPage';
 import { UsersPage } from '@/pages/UsersPage';
 
 const queryClient = new QueryClient({
@@ -20,28 +27,44 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          {/* Public */}
-          <Route path="/login" element={<LoginPage />} />
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Public */}
+            <Route path="/login" element={<LoginPage />} />
 
-          {/* Protected — all roles */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/customers" element={<CustomersPage />} />
-            <Route path="/products" element={<ProductsPage />} />
-            <Route path="/challans" element={<ChallansPage />} />
-          </Route>
+            {/* Protected — all authenticated roles */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<DashboardPage />} />
 
-          {/* Protected — Admin only */}
-          <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
-            <Route path="/users" element={<UsersPage />} />
-          </Route>
+              {/* Customers */}
+              <Route path="/customers" element={<CustomersPage />} />
+              <Route path="/customers/:id" element={<CustomerDetailPage />} />
 
-          {/* Catch all */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
+              {/* Products */}
+              <Route path="/products" element={<ProductsPage />} />
+              <Route path="/products/:id" element={<ProductDetailPage />} />
+
+              {/* Challans — view for all roles */}
+              <Route path="/challans" element={<ChallansPage />} />
+              <Route path="/challans/:id" element={<ChallanDetailPage />} />
+            </Route>
+
+            {/* Protected — Admin + Sales can create challans */}
+            <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'SALES']} />}>
+              <Route path="/challans/new" element={<CreateChallanPage />} />
+            </Route>
+
+            {/* Protected — Admin only */}
+            <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+              <Route path="/users" element={<UsersPage />} />
+            </Route>
+
+            {/* Catch all */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </QueryClientProvider>
   );
 }
